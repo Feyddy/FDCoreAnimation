@@ -141,10 +141,28 @@
  */
 - (void) CABasicAnimation {
     CABasicAnimation * ani = [CABasicAnimation animationWithKeyPath:@"position"];
+    //动画时间
+    ani.duration = 1.0f;
+//    ani.beginTime = 1.0f;
+    
+    //动画起始值
+//    ani.fromValue = @1;
+    //动画结束值
     ani.toValue = [NSValue valueWithCGPoint:self.centerShow.center];
-    ani.removedOnCompletion = NO;
-    ani.fillMode = kCAFillModeForwards;
+    
+    ani.repeatCount = HUGE_VALF;
+    
+    //动画完成后回到原始状态时有动画效果
+    //ani.autoreverses = YES;
+    
+    //如果想动画结束后维持动画状态结束后的状态，除以下两个设置外，必须把autoreverses置成NO。
+    ani.removedOnCompletion = NO;//动画完成后，动画对象不移除
+    ani.fillMode = kCAFillModeForwards;//动画结束后维持动画结束的状态
     ani.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    
+    //锚点
+//    self.cartCenter.layer.anchorPoint = CGPointMake(0, 0);
+    
     [self.cartCenter.layer addAnimation:ani forKey:@"PostionAni"];
 }
 
@@ -173,9 +191,16 @@
 
 - (void)CAKeyframeAnimationWithPath {
     CAKeyframeAnimation * ani = [CAKeyframeAnimation animationWithKeyPath:@"position"];
+    //创建路径
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathAddEllipseInRect(path, NULL, CGRectMake(130, 200, 100, 100));
+//    CGPathAddRect(<#CGMutablePathRef  _Nullable path#>, <#const CGAffineTransform * _Nullable m#>, <#CGRect rect#>)
+    
+    //将路径添加给关键帧动画
     ani.path = path;
+    //设置速度控制属性
+     ani.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    
     CGPathRelease(path);
     ani.duration = 4.0;
     ani.removedOnCompletion = NO;
@@ -236,6 +261,8 @@
     CAAnimationGroup * groupAni = [CAAnimationGroup animation];
     groupAni.animations = @[posAni, opcAni, bodAni];
     groupAni.duration = 1.0;
+    //必须设置动画组的属性，才能保证循环执行，单独设置动画对象无效。
+    groupAni.repeatCount = HUGE_VALF;
     groupAni.fillMode = kCAFillModeForwards;
     groupAni.removedOnCompletion = NO;
     groupAni.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
